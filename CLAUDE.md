@@ -15,7 +15,7 @@ architecture — the sections below document the base the app inherits.
 
 ## Commands
 
-| Task                | Command                                                     |
+| Task                | Command                                                    |
 | ------------------- | ---------------------------------------------------------- |
 | Dev server          | `npm run dev`                                              |
 | Production build    | `npm run build` → static site in `build/` (adapter-static) |
