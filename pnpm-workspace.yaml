@@ -1,0 +1,25 @@
+# Single-package repository — this file exists to carry the pnpm settings that
+# pnpm 10+ reads from here rather than from .npmrc, not to declare workspaces.
+
+# Supply-chain cooldown: a newly published version may only be resolved once it
+# is at least 7 days old (value is in minutes: 7 × 24 × 60 = 10080). This mirrors
+# the Dependabot `cooldown` setting so manual `pnpm add`/`pnpm update` are held to
+# the same rule.
+#
+# This is enforced twice, and the second half is the one that bites in CI: pnpm
+# also verifies *every* entry already in the lockfile against the policy, including
+# on `pnpm install --frozen-lockfile`. A lockfile carrying a too-young version
+# therefore fails the install outright (ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION) —
+# see the note in CLAUDE.md on how Dependabot PRs trip this.
+minimumReleaseAge: 10080
+
+# Deliberate, individually justified exceptions to the cooldown above. Keep this
+# empty unless a real case demands it (e.g. closing a high-severity advisory whose
+# patch is younger than the cooldown), and state the reason inline. It is not a
+# place to launder resolver drift from a Dependabot PR.
+minimumReleaseAgeExclude: []
+
+# Dependencies allowed to run their install lifecycle scripts. pnpm blocks these
+# by default; anything not listed here is installed without executing its scripts.
+onlyBuiltDependencies:
+  - esbuild

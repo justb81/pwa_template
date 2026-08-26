@@ -1,8 +1,24 @@
 {
 	"name": "pwa-template",
-	"private": true,
 	"version": "0.1.0",
+	"private": true,
+	"description": "Client-only Progressive Web App template (SvelteKit + Svelte 5 + Tailwind 4).",
+	"license": "Apache-2.0",
+	"author": "Bastian Rang",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/justb81/pwa_template.git"
+	},
+	"homepage": "https://github.com/justb81/pwa_template#readme",
+	"bugs": {
+		"url": "https://github.com/justb81/pwa_template/issues"
+	},
 	"type": "module",
+	"packageManager": "pnpm@11.9.0",
+	"engines": {
+		"node": ">=22",
+		"pnpm": ">=10"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -13,7 +29,7 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "pnpm run test:unit --run"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
