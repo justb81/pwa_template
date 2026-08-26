@@ -10,10 +10,10 @@
 import { browser } from '$app/environment';
 
 interface TitlebarRect {
-	x: number;
-	y: number;
-	width: number;
-	height: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 const EMPTY_RECT: TitlebarRect = { x: 0, y: 0, width: 0, height: 0 };
@@ -22,27 +22,27 @@ const EMPTY_RECT: TitlebarRect = { x: 0, y: 0, width: 0, height: 0 };
 const GEOMETRY_DEBOUNCE_MS = 60;
 
 class WindowChrome {
-	visible = $state(false);
-	rect = $state<TitlebarRect>(EMPTY_RECT);
+  visible = $state(false);
+  rect = $state<TitlebarRect>(EMPTY_RECT);
 
-	private debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-	constructor() {
-		const overlay = browser ? navigator.windowControlsOverlay : undefined;
-		if (!overlay) return;
+  constructor() {
+    const overlay = browser ? navigator.windowControlsOverlay : undefined;
+    if (!overlay) return;
 
-		this.sync(overlay);
-		overlay.addEventListener('geometrychange', () => {
-			clearTimeout(this.debounceTimer);
-			this.debounceTimer = setTimeout(() => this.sync(overlay), GEOMETRY_DEBOUNCE_MS);
-		});
-	}
+    this.sync(overlay);
+    overlay.addEventListener('geometrychange', () => {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => this.sync(overlay), GEOMETRY_DEBOUNCE_MS);
+    });
+  }
 
-	private sync(overlay: WindowControlsOverlay): void {
-		this.visible = overlay.visible;
-		const rect = overlay.getTitlebarAreaRect();
-		this.rect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-	}
+  private sync(overlay: WindowControlsOverlay): void {
+    this.visible = overlay.visible;
+    const rect = overlay.getTitlebarAreaRect();
+    this.rect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  }
 }
 
 /** App-wide Window Controls Overlay singleton. */

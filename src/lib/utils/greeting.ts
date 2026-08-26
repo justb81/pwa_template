@@ -7,6 +7,6 @@
 
 /** Build a friendly greeting, trimming and falling back to a generic name. */
 export function greet(name: string): string {
-	const trimmed = name.trim();
-	return `Hello, ${trimmed || 'world'}!`;
+  const trimmed = name.trim();
+  return `Hello, ${trimmed || 'world'}!`;
 }
