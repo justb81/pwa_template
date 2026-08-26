@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+# SPDX-License-Identifier: Apache-2.0
+# Code owners for pwa-template
+#
+# The maintainer reviews and approves every change before merge. The catch-all
+# rule below makes @justb81 a required reviewer for any path; combined with
+# branch protection ("Require review from Code Owners") this guarantees nothing
+# merges into `main` without the maintainer's approval.
+
+# Everything in the repository.
+*                           @justb81
