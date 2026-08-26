@@ -10,7 +10,17 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		// Additional strictness, mirroring the shared baseline in selbstbehalt's
+		// tsconfig.base.json. Catching these at `pnpm typecheck` keeps them out of
+		// review; loosen an individual flag only with a reason.
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"noImplicitOverride": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true
 	}
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
 	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files

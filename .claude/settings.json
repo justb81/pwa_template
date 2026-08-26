@@ -7,7 +7,7 @@
 			"Bash(pnpm run dev:*)",
 			"Bash(pnpm run build:*)",
 			"Bash(pnpm run preview:*)",
-			"Bash(pnpm run check:*)",
+			"Bash(pnpm run typecheck:*)",
 			"Bash(pnpm run lint:*)",
 			"Bash(pnpm run format:*)",
 			"Bash(pnpm test:*)",
