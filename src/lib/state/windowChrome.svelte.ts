@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Tracks the Window Controls Overlay (WCO) state for an installed, Chromium-desktop
  * app: whether it's active right now, and the titlebar-area rect the app is allowed

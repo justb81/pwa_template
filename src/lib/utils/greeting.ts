@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Example pure helper — delete once you have real code. It exists mainly so the
  * template ships with a green test to copy from: pure, framework-free logic lives

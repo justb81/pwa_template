@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 import { describe, it, expect } from 'vitest';
 import { greet } from './greeting.js';
 

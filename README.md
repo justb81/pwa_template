@@ -1,3 +1,6 @@
+<!-- SPDX-FileCopyrightText: 2026 Bastian Rang and contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # pwa_template
 
 A Svelte-based **Progressive Web App** template — the base setup for spinning up a new

@@ -2,6 +2,8 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 
 // SvelteKit auto-registers this file in production builds. It precaches the app
 // shell + static assets for offline use and serves them cache-first, so the app

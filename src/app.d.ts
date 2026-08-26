@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {

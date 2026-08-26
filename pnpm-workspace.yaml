@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+# SPDX-License-Identifier: Apache-2.0
 # Single-package repository — this file exists to carry the pnpm settings that
 # pnpm 10+ reads from here rather than from .npmrc, not to declare workspaces.
 

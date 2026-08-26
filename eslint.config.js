@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 import prettier from 'eslint-config-prettier';
 import path from 'node:path';
 import js from '@eslint/js';

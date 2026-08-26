@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 // Client-only static PWA: prerender the shell to a static file, but never SSR.
 // adapter-static emits a prerendered shell that hydrates and then runs entirely
 // in the browser. Flip `ssr` on here if you later add server-rendered routes.

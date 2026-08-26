@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Detects when a new service-worker version has installed and is waiting to
  * take over, so the UI can prompt the user to reload instead of silently
