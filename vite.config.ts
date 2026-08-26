@@ -25,6 +25,26 @@ export default defineConfig({
   ],
   test: {
     expect: { requireAssertions: true },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      // Only the framework-free logic under src/lib is measured. Components and
+      // the browser-API state singletons are exercised by the Playwright suite,
+      // not by the Node test project, so counting them here would report a floor
+      // no unit test can raise.
+      include: ['src/lib/**/*.ts'],
+      exclude: ['src/**/*.d.ts', 'src/**/*.svelte', 'src/lib/state/**'],
+      thresholds: {
+        // Pure logic lives here and must stay well covered — co-locate a
+        // .spec.ts for every new util.
+        'src/lib/utils/**': {
+          statements: 90,
+          branches: 90,
+          functions: 90,
+          lines: 90,
+        },
+      },
+    },
     projects: [
       {
         extends: './vite.config.ts',
