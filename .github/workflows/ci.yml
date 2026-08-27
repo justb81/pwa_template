@@ -34,23 +34,23 @@ env:
 
 jobs:
   build:
+    # Deliberately not a matrix job. A matrix suffixes the check-run name with the
+    # value (`… Build (26)`), so the required-status-check configured in branch
+    # protection would silently stop matching the moment the Node version is
+    # bumped — and the branch would no longer be gated. The version lives in
+    # .nvmrc alone, which every other job reads too.
     name: Lint · Typecheck · Test · Build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Active Node LTS line(s). Extend the matrix as new LTS versions land.
-        node-version: ['26']
     steps:
       - uses: actions/checkout@v7
 
       - name: Install pnpm
         uses: pnpm/action-setup@v6
 
-      - name: Set up Node ${{ matrix.node-version }}
+      - name: Set up Node
         uses: actions/setup-node@v7.0.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: Install dependencies
@@ -75,7 +75,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: coverage-node-${{ matrix.node-version }}
+          name: coverage
           path: coverage/
           if-no-files-found: ignore
           retention-days: 7

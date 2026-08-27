@@ -135,7 +135,10 @@ Three workflows gate a pull request:
 | `headers.yml` | `SPDX headers + architecture-doc references` | **every** change, including docs-only  |
 
 Set all three as required status checks under **Settings → Branches**, and enable **Require review
-from Code Owners** so `CODEOWNERS` takes effect. The split is deliberate: `ci.yml` skips
+from Code Owners** so `CODEOWNERS` takes effect. The names above are exactly what the checks report;
+keep them stable — a matrix job would append its value to the name (`… Build (26)`) and the
+required check would silently stop matching the next time that value changed, leaving the branch
+ungated. That is why the Node version lives only in `.nvmrc`. The split is deliberate: `ci.yml` skips
 documentation changes because they cannot affect lint or the build, so the header and
 doc-reference checks — which are plain Node with no install — run separately without that
 exclusion.
