@@ -1,8 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
 # SPDX-License-Identifier: Apache-2.0
 version: 2
 
 updates:
-  # npm / pnpm dependencies across the whole workspace (root + frontend + backend).
+  # pnpm dependencies. `package-ecosystem: npm` covers pnpm too — Dependabot reads
+  # package.json and pnpm-lock.yaml under this ecosystem name.
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -19,6 +21,15 @@ updates:
       prod-dependencies:
         dependency-type: production
         update-types: [minor, patch]
+    ignore:
+      # TypeScript 7 (the native compiler rewrite) is not yet usable here:
+      # typescript-eslint still caps its peer range at `typescript: >=4.8.4 <6.1.0`,
+      # and eslint.config.js uses type-aware linting (`projectService: true`), so
+      # there is no way to opt out. Drop this entry once typescript-eslint widens
+      # the range, then do the TS 7 migration deliberately rather than via a bump
+      # PR. Only majors are ignored — 6.x minor/patch updates still flow normally.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
 
   # GitHub Actions used by the CI workflows.
   - package-ecosystem: github-actions

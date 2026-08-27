@@ -1,3 +1,6 @@
+<!-- SPDX-FileCopyrightText: 2026 Bastian Rang and contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -15,22 +18,30 @@ architecture — the sections below document the base the app inherits.
 
 ## Commands
 
-| Task                | Command                                                    |
-| ------------------- | ---------------------------------------------------------- |
-| Dev server          | `npm run dev`                                              |
-| Production build    | `npm run build` → static site in `build/` (adapter-static) |
-| Preview build       | `npm run preview`                                          |
-| Type-check          | `npm run check` (runs `svelte-kit sync` + `svelte-check`)  |
-| Unit tests (once)   | `npm test`                                                 |
-| Unit tests (watch)  | `npm run test:unit`                                        |
-| Single test file    | `npx vitest run src/lib/utils/greeting.spec.ts`            |
-| Single test by name | `npx vitest run -t "greets a given name"`                  |
-| Lint                | `npm run lint` (prettier `--check` + eslint)               |
-| Format              | `npm run format`                                           |
+| Task                  | Command                                                        |
+| --------------------- | -------------------------------------------------------------- |
+| Dev server            | `pnpm dev`                                                     |
+| Production build      | `pnpm build` → static site in `build/` (adapter-static)        |
+| Preview build         | `pnpm preview`                                                 |
+| Type-check            | `pnpm typecheck` (runs `svelte-kit sync` + `svelte-check`)     |
+| Unit tests (once)     | `pnpm test`                                                    |
+| Unit tests (watch)    | `pnpm test:watch`                                              |
+| Unit tests + coverage | `pnpm test:coverage`                                           |
+| Single test file      | `pnpm exec vitest run src/lib/utils/greeting.spec.ts`          |
+| Single test by name   | `pnpm exec vitest run -t "greets a given name"`                |
+| End-to-end tests      | `pnpm test:e2e` (`vite build`, then Playwright)                |
+| Lint                  | `pnpm lint` (eslint only)                                      |
+| Format                | `pnpm format` / `pnpm format:check`                            |
+| CI gates (no install) | `pnpm headers:check`, `pnpm docs:check`, `pnpm licenses:check` |
+
+The package manager is **pnpm** (pinned via `packageManager`); `corepack enable` picks up the
+right version. `pnpm install` also installs the Husky hooks.
 
 Tests run under Vitest's `server` (Node) project, which only matches `src/**/*.{test,spec}.{js,ts}`
 (not `*.svelte.{test,spec}.*`). `requireAssertions` is enabled — every test must make at least one
-assertion.
+assertion. Anything that needs a real browser goes in `e2e/` instead: the `chromium` Playwright
+project runs against the dev server, `pwa` against `vite preview` of the build (the service worker
+only exists there).
 
 ## Architecture
 
@@ -74,8 +85,11 @@ in non-supporting environments (`browser` from `$app/environment`, plus feature 
 
 - **Client-only.** `+layout.ts` sets `ssr = false` + `prerender = true`; adapter-static emits a
   prerendered shell that hydrates and runs entirely in the browser.
-- **Offline.** `service-worker.ts` is auto-registered by SvelteKit in production builds (manual
-  registration is off — see `vite.config.ts`); it precaches the shell and static assets cache-first.
+- **Offline.** `service-worker.ts` is registered **manually** from `+layout.svelte` in production;
+  SvelteKit's own registration is switched off (`serviceWorker: { register: false }` in
+  `vite.config.ts`) so that dev mode registers no worker at all and a cache-first worker from an
+  earlier build can never mask fresh dev output. It precaches the shell and static assets
+  cache-first.
   The manifest link and `theme-color` are in `src/app.html`; assets are `static/manifest.webmanifest`
   and `static/pwa-icon*`.
 - **Installable.** `static/manifest.webmanifest` declares name/icons/display; the icons are
@@ -83,12 +97,23 @@ in non-supporting environments (`browser` from `$app/environment`, plus feature 
 
 ## CI / release
 
-`.github/` is preconfigured: **CI** (`ci.yml`) runs `lint` / `check` / `test` / `build` on every PR;
-**Dependabot** (`dependabot.yml`) opens weekly grouped dependency PRs with a 7-day cooldown;
-**release-please** (`release-please.yml` + `release-please-config.json` + `.release-please-manifest.json`)
-raises the version/changelog PR from Conventional Commits; **deploy** (`deploy.yml`) builds with
-`BASE_PATH` set to the Pages subpath and publishes to GitHub Pages on each release. The release-please
-workflow needs a `RELEASE_TOKEN` repository secret (a PAT) so a created release can trigger the deploy.
+`.github/` is preconfigured:
+
+- **CI** (`ci.yml`) — one `Lint · Typecheck · Test · Build` job plus `E2E (Playwright)`. Skips
+  docs-only changes via `paths-ignore`.
+- **Docs & license gate** (`headers.yml`) — `check-spdx-headers.mjs` + `check-doc-refs.mjs`,
+  deliberately **without** `paths-ignore` so it covers exactly what `ci.yml` skips. Both scripts
+  are dependency-free, so this job runs without `pnpm install`.
+- **CodeQL** (`codeql.yml`) and **Security** (`security.yml`: `pnpm audit`, license allowlist,
+  CycloneDX SBOM) — on relevant changes plus weekly.
+- **Dependabot** (`dependabot.yml`) — weekly grouped PRs with a 7-day cooldown.
+- **release-please** (`release-please.yml` + `release-please-config.json` +
+  `.release-please-manifest.json`) — raises the version/changelog PR from Conventional Commits,
+  reformats its own output to satisfy `format:check`, and calls `deploy.yml` once a release is
+  created.
+- **deploy** (`deploy.yml`) — `workflow_call`/`workflow_dispatch` only. Builds with `BASE_PATH` set
+  to the Pages subpath and publishes to GitHub Pages. No PAT required; `RELEASE_PLEASE_TOKEN` is
+  optional and only makes CI run on the release PR itself.
 
 ## Conventions & gotchas
 
@@ -104,4 +129,58 @@ workflow needs a `RELEASE_TOKEN` repository secret (a PAT) so a created release 
 - **Renaming for a new app:** `name` in `package.json`, `package-name` in `release-please-config.json`,
   `name`/`short_name`/`description` in `static/manifest.webmanifest`, the `theme-color` in
   `src/app.html` + manifest, the design tokens in `src/routes/layout.css`, and the cache prefix /
-  build-log tag (`pwa-` / `[pwa]`) in `service-worker.ts` / `+layout.svelte`.
+  build-log tag (`pwa-` / `[pwa]`) in `service-worker.ts` / `+layout.svelte`. Also swap the SPDX
+  copyright holder (see below), `NOTICE`, `CODEOWNERS` and the URLs in `SECURITY.md` /
+  `.github/ISSUE_TEMPLATE/config.yml`.
+- **Commits**: commitlint enforces Conventional Commits with a **lowercase, non-sentence-case
+  subject** (`feat(pwa): add offline page`, not `feat: Add offline page`). Husky runs
+  `eslint --fix` + `prettier --write` on staged files at commit time; `HUSKY=0` disables both
+  (that is the CI path).
+- **SPDX headers are gated in CI** — every first-party file opens with
+  `SPDX-FileCopyrightText: 2026 Bastian Rang and contributors` followed by
+  `SPDX-License-Identifier: Apache-2.0`, in the comment syntax of its language.
+  `pnpm headers:check` verifies it (`--fix` inserts what is missing) and
+  `.github/workflows/headers.yml` runs it on **every** change. A file type absent from
+  `STYLE_BY_EXTENSION` in `scripts/check-spdx-headers.mjs` is not checked at all — that is how
+  JSON, the web app manifest and the icons stay out without an exclude. Real excludes carry a
+  per-entry reason; never widen that list without one, and never put our copyright on
+  third-party code.
+- **`docs/architecture.md` is the single source of truth** (arc42, twelve chapters). Cite it as
+  `docs/architecture.md §N`; `pnpm docs:check` verifies that every such reference resolves, so a
+  renumbered chapter fails CI rather than rotting silently. Put new architecture content in the
+  chapter it belongs to rather than appending it.
+- **Coverage gate**: `src/lib/utils/**` must stay ≥ 90 % (statements/branches/functions/lines) —
+  co-locate a `.spec.ts` for every new util. Components and `src/lib/state/**` are excluded from
+  coverage on purpose: the Vitest `server` project is Node-only and never runs them, so they are
+  covered by the Playwright suite in `e2e/` instead.
+- **`ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` on a Dependabot PR = resolver drift, not a stale
+  lockfile.** pnpm verifies every lockfile entry against `minimumReleaseAge` (7 days) on **every**
+  install, `--frozen-lockfile` included, so all install-dependent jobs go red at once. Dependabot
+  regenerates the lockfile with its own resolver, which ignores the policy. Fix: redo the bump
+  locally — edit the manifest, then `pnpm install --lockfile-only`, where pnpm applies the cooldown
+  _during_ resolution; confirm `git diff pnpm-lock.yaml` touches only the intended package. Do
+  **not** extend `minimumReleaseAgeExclude` — that allowlist is for deliberate exceptions, not for
+  laundering drift.
+- **e2e in a sandbox without the pinned browser**: run
+  `PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium pnpm exec playwright test --project=chromium`.
+
+## Repository hygiene & change policy
+
+- **No outdated content in the repo.** Code, docs, comments, examples, and configuration must
+  always reflect the current state. When you change something, update everything it touches in the
+  same change — never leave stale references, dead code, obsolete docs, or superseded files behind.
+  If you find existing content that is out of date, fix or remove it.
+- **No backward-compatibility guarantee by default.** When changing an interface, API, schema, data
+  format, or config, prefer the clean, correct result over preserving the old shape. Do not add
+  compatibility shims, deprecation layers, dual-path handling, or migration fallbacks unless
+  backward compatibility is explicitly requested. Update all call sites and consumers directly
+  instead.
+
+## Issue & PR workflow
+
+- **Tick off completed checkboxes.** When a change completes task checkboxes in the issue(s) it
+  addresses, update the issue body to mark those boxes `- [x]` as part of the same work — don't
+  leave finished tasks unchecked.
+- **Auto-close issues from the PR.** When a PR fully resolves an issue, add a `Closes #<n>` line to
+  the PR body so GitHub closes it on merge. List one `Closes #<n>` per fully-resolved issue. Use
+  `Refs #<n>` (not `Closes`) for issues the PR only touches partially.

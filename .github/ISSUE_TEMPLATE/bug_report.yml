@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+# SPDX-License-Identifier: Apache-2.0
+name: Bug report
+description: Report something that is broken or behaving unexpectedly.
+labels: ['bug']
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including what you expected instead.
+      placeholder: When I … I expected … but instead …
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to …
+        2. Click …
+        3. See error
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the template is affected?
+      options:
+        - App shell / routing
+        - PWA (service worker, manifest, install, update flow)
+        - Build / toolchain (Vite, SvelteKit, Tailwind, TypeScript)
+        - CI / release automation
+        - Tests (Vitest, Playwright)
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser & version, OS, Node & pnpm version, app version or commit.
+      placeholder: |
+        - Browser: Firefox 130
+        - OS: Ubuntu 24.04
+        - Node: 26.x, pnpm: 11.x
+        - Commit: abc1234
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Relevant console output, build output or screenshots.
+    validations:
+      required: false

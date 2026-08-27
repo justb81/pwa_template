@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Bastian Rang and contributors
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Example pure helper — delete once you have real code. It exists mainly so the
  * template ships with a green test to copy from: pure, framework-free logic lives
@@ -7,6 +9,6 @@
 
 /** Build a friendly greeting, trimming and falling back to a generic name. */
 export function greet(name: string): string {
-	const trimmed = name.trim();
-	return `Hello, ${trimmed || 'world'}!`;
+  const trimmed = name.trim();
+  return `Hello, ${trimmed || 'world'}!`;
 }
